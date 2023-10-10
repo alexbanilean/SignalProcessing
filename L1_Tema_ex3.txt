@@ -1,0 +1,7 @@
+Un semnal este digitizat cu o frecventa de esantionare de 2000 Hz.
+(a) Care este intervalul de timp intre doua esantioane?
+(b) Daca un esantion este memorat pe 4 biti, cati bytes vor ocupa 1 ora
+de achizitie?
+
+a) Intervalul de timp intre doua esantioane este inversul frecventei de esantionare adica 1/2000 = 0.0005s.
+b) Numarul de esantioane/s = 2000. Intr o ora vor fi 2000 * 3600 = 7200000 esantioane. Daca un esantion este memorat pe 4 biti atunci 7200000 esantioane vor fi memorate pe 7200000 * 4 = 28800000 biti adica 3600000 bytes => 3.6MB. 
