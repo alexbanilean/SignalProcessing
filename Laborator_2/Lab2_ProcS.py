@@ -194,18 +194,46 @@ plt.show()
 #%% Ex 7
 
 def signal_7(t):
-    return np.sin(2 * np.pi * 1000 * t)
+    return np.sin(2 * np.pi * 300 * t)
 
-time_7 = np.linspace(0, 0.005, 200)
+time_7 = np.linspace(0, 0.025, 25)
 
 XA = signal_7(time_7)
 XB = XA[::4]
 XC = XA[1::4]
 
-plt.tight_layout()
+fig, axs = plt.subplots(2)
+fig.tight_layout()
 
-plt.plot(time_7, XA, color='red')
-plt.plot(np.array(time_7)[::4], XB, 'o:', color='green')
-plt.plot(time_7[1::4], XC, 'o:', color='cyan')
+axs[0].plot(time_7, XA, color='red')
+axs[0].plot(time_7[::4], XB, 'o', color='green')
+axs[0].plot(time_7[1::4], XC, 'o', color='cyan')
 
-plt.show()
+axs[1].plot(time_7[::4], XB, color='green')
+axs[1].plot(time_7[1::4], XC, color='cyan')
+
+fig.show()
+
+#%% Ex 8
+
+alpha = np.linspace(-np.pi / 2, np.pi / 2, 1000)
+sin_alpha = np.sin(alpha)
+pade_alpha = (alpha - 7 * alpha**3 / 60) / (1 + alpha**2 / 20)
+
+sin_error = np.abs(alpha - sin_alpha)
+pade_error = np.abs(alpha - pade_alpha)
+
+fig, axs = plt.subplots(2)
+fig.tight_layout()
+
+axs[0].plot(alpha, alpha, color='green')
+axs[0].plot(alpha, sin_alpha, color='blue', label = 'sin alpha')
+axs[0].plot(alpha, pade_alpha, color='yellow', label = 'pade alpha')
+axs[0].set(xlabel='alpha', ylabel='value')
+
+axs[1].plot(alpha, sin_error, color='red')
+axs[1].plot(alpha, pade_error, color='orange')
+axs[1].set(xlabel='alpha', ylabel='error value')
+
+fig.show()
+
