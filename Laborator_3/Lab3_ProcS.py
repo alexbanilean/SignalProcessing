@@ -89,7 +89,7 @@ def sgn(t):
 def get_F(x, w):
     return np.sum(np.array([x[n] * math.e ** ((-2 * np.pi * 1j * w * n) / N) for n in range(N)]))
 
-rx = np.linspace(0, 1, N)
+rx = np.linspace(0, 1, N + 1)
 S = sgn(rx)
 X = np.array([np.abs(get_F(S, w)) for w in range(1, N + 1)])
 
