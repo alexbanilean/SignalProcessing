@@ -73,6 +73,9 @@ axs[2].plot(rx, S3, 'o', color="red")
 axs[2].plot(rx2, sgn3(rx2), color='orange')
 fig.show()
 
+fig.savefig('PS_04_2.png', format='png')
+fig.savefig('PS_04_2.pdf', format='pdf')
+
 #%% Ex 3
 
 def sgn1(t):
@@ -100,6 +103,10 @@ axs[2].plot(rx, S3, 'o', color="red")
 axs[2].plot(rx2, sgn3(rx2), color='orange')
 fig.show()
 
+
+fig.savefig('PS_04_3.png', format='png')
+fig.savefig('PS_04_3.pdf', format='pdf')
+
 #%% Ex 4
 
 """
@@ -118,9 +125,8 @@ R: Conform teoremei Niquist, frecventa minima de esantionare trebuie sa fie
 
 import scipy.io.wavfile
 import scipy.signal
-import sounddevice
-
 rate, S = scipy.io.wavfile.read("D:/Proiecte/SignalProcessing/Laborator_4/vowels.wav")
+# plt.specgram(S, Fs=rate)
 
 group_size = len(S) // 100
 overlap = group_size // 2
@@ -128,24 +134,19 @@ overlap = group_size // 2
 groups = [S[i:i + group_size] for i in range(0, len(S), group_size - overlap)]
 
 fft_data = [np.abs(np.fft.fft(group)) for group in groups]
-fft_data = fft_data[:-2]
 
-fft_matrix = np.array(fft_data)
+max_amplitudes = [np.max(group) for group in fft_data]
+A_max = np.max(max_amplitudes)
 
-time_step = 1.0 / rate
-num_samples, num_frequencies = fft_matrix.shape
-time_axis = np.linspace(0, num_samples * time_step, num_samples)
-frequency_axis = np.fft.fftfreq(num_frequencies, d=time_step)
+fft_matrix_dBFS = 20 * np.log10(np.array(fft_data[:-2]).T / A_max)
 
-frequency_axis_kHz = frequency_axis / 1000
-
-plt.imshow(20 * np.log10(fft_matrix.T), cmap='inferno', origin='lower', aspect='auto',
-           extent=[time_axis.min(), time_axis.max(), frequency_axis_kHz.min(), frequency_axis_kHz.max()])
-plt.xlabel('Timp (s)')
-plt.ylabel('Frecventa (kHz)')
-plt.title('Spectrograma')
+plt.imshow(fft_matrix_dBFS, cmap='inferno', origin='lower', aspect='auto')
 plt.colorbar(label='Amplitudine (dBFS)')
 plt.show()
+
+
+plt.savefig('PS_04_6.png', format='png')
+plt.savefig('PS_04_6.pdf', format='pdf')
 
 #%% Ex 7
 
