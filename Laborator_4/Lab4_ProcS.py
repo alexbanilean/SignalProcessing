@@ -5,6 +5,8 @@ import numpy as np
 import math
 import time
 
+#%%
+
 ### Ex 1
 
 def sgn(t):
@@ -30,21 +32,22 @@ for N in N_val:
     numpy_fft_result = np.fft.fft(S)
     numpy_fft_execution_time = time.time_ns() - start_time
     numpy_fft_times.append(numpy_fft_execution_time)
-    
-plt.figure(figsize=(10, 6))
-plt.tight_layout()
-plt.plot(N_val, my_dft_times, label='my_dft')
-plt.plot(N_val, numpy_fft_times, label='numpy.fft')
-plt.yscale('log')
-plt.xlabel('Dimensiunea vectorului N')
-plt.ylabel('Timp de execuție (log scale)')
-plt.title('Compararea timpilor de execuție')
-plt.legend()
-plt.grid(True)
-plt.show()
+ 
+#%%   
+ 
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(N_val, my_dft_times, label='my_dft')
+ax.plot(N_val, numpy_fft_times, label='numpy.fft')
+ax.set_yscale('log')
+ax.grid(True)
+ax.set_xlabel('Dimensiunea vectorului N')
+ax.set_ylabel('Timp de execuție (log scale)')
+fig.suptitle('Compararea timpilor de execuție')
+fig.legend()
+fig.show()
 
-plt.savefig('PS_04_1.png', format='png')
-plt.savefig('PS_04_1.pdf', format='pdf')
+fig.savefig("{}.png".format('PS_04_1'))
+fig.savefig("{}.pdf".format('PS_04_1'))
 
 #%% Ex 2
 
@@ -140,13 +143,13 @@ A_max = np.max(max_amplitudes)
 
 fft_matrix_dBFS = 20 * np.log10(np.array(fft_data[:-2]).T / A_max)
 
-plt.imshow(fft_matrix_dBFS, cmap='inferno', origin='lower', aspect='auto')
-plt.colorbar(label='Amplitudine (dBFS)')
-plt.show()
+fig, ax = plt.subplots(figsize=(10, 6))
+im = ax.imshow(fft_matrix_dBFS, cmap='inferno', origin='lower', aspect='auto')
+fig.colorbar(im, label='Amplitudine (dBFS)')
+fig.show()
 
-
-plt.savefig('PS_04_6.png', format='png')
-plt.savefig('PS_04_6.pdf', format='pdf')
+fig.savefig('PS_04_6.png', format='png')
+fig.savefig('PS_04_6.pdf', format='pdf')
 
 #%% Ex 7
 
