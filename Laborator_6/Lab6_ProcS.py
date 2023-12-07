@@ -127,7 +127,7 @@ fig.savefig('PS_06_4b.pdf', format='pdf')
 
 f_s = 1 / 3600
 f_niq = f_s / 2
-f_c = 1 / (3600 * 24)
+f_c = 1 / (3600 * 12) # sau 24
 f_norm = f_c / f_niq
 
 print("f_norm =", f_norm)

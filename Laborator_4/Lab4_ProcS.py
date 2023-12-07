@@ -31,8 +31,23 @@ for N in N_val:
     start_time = time.time_ns()
     numpy_fft_result = np.fft.fft(S)
     numpy_fft_execution_time = time.time_ns() - start_time
+    
     numpy_fft_times.append(numpy_fft_execution_time)
- 
+
+#%%
+
+numpy_fft_times.clear()
+
+for N in N_val:
+    rx = np.linspace(0, 1, N + 1)
+    S = sgn(rx)
+
+    start_time = time.perf_counter_ns()
+    numpy_fft_result = np.fft.fft(S)
+    numpy_fft_execution_time = time.perf_counter_ns() - start_time
+    
+    numpy_fft_times.append(numpy_fft_execution_time)
+
 #%%   
  
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -142,6 +157,7 @@ max_amplitudes = [np.max(group) for group in fft_data]
 A_max = np.max(max_amplitudes)
 
 fft_matrix_dBFS = 20 * np.log10(np.array(fft_data[:-2]).T / A_max)
+fft_matrix_dBFS = fft_matrix_dBFS[:len(fft_matrix_dBFS) // 2]
 
 fig, ax = plt.subplots(figsize=(10, 6))
 im = ax.imshow(fft_matrix_dBFS, cmap='inferno', origin='lower', aspect='auto')
