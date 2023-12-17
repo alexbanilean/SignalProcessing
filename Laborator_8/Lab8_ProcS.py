@@ -86,7 +86,7 @@ def predict_ar_model(ts, p, m, x):
     for i in range(p, n):
         x_pred = np.array(ts[i - p : i][::-1])
         
-        predictions[i] = np.dot(x_estimated, x_pred)
+        predictions[i] = np.dot(x, x_pred)
     
     return predictions
     
