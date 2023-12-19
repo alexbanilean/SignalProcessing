@@ -137,33 +137,30 @@ fig.savefig('PS_09_2_3.pdf', format='pdf')
 
 ### c)
 
-q = 5
+q = 17
 m = N - q
 
 miu = np.mean(time_series)
+eps = np.random.normal(size=len(time_series))
 
 def estimate_ma_coefficients(ts, q, m, miu):
-    eps = np.random.normal(size=len(ts))
-    y = ts[q:q+m]
+    y = ts[q:q+m] - eps[q:q+m] - miu
 
-    Y = np.column_stack([eps[i - q : i + 1][::-1].tolist() + [miu] for i in range(q, q + m)])
+    Y = np.column_stack([eps[i - q : i][::-1] for i in range(q, q + m)])
     Y = Y.T
 
-    x = np.linalg.lstsq(Y[:, 1:-1], y, rcond=None)[0]
-    
-    x_estimated = np.concatenate(([1], x, [1]))
+    x = np.linalg.lstsq(Y, y, rcond=None)[0]
 
-    return x_estimated
+    return x
     
 def predict_ma_model(ts, q, m, x, miu):
     n = len(ts)
-    eps = np.random.normal(size=n)
     predictions = np.zeros(n)
     
     for i in range(q, n):
-        x_pred = np.array(eps[i - q : i + 1][::-1].tolist() + [miu])
+        x_pred = np.array(eps[i - q : i][::-1])
         
-        predictions[i] = np.dot(x, x_pred)
+        predictions[i] = np.dot(x, x_pred) + eps[i] + miu
     
     return predictions
     
@@ -204,6 +201,7 @@ p = 12
 q = 5
 m = N - max(p, q)
 miu = np.mean(time_series)
+eps = np.random.normal(size=len(time_series))
 
 def estimate_arma_coefficients(ts, p, q, m, miu):
     y = ts[p:p+m]
@@ -213,28 +211,24 @@ def estimate_arma_coefficients(ts, p, q, m, miu):
     
     x_AR = np.linalg.lstsq(Y, y, rcond=None)[0]
     
-    eps = np.random.normal(size=len(ts))
-    y = ts[q:q+m]
+    y = ts[q:q+m] - eps[q:q+m] - miu
 
-    Y = np.column_stack([eps[i - q : i + 1][::-1].tolist() + [miu] for i in range(q, q + m)])
+    Y = np.column_stack([eps[i - q : i][::-1] for i in range(q, q + m)])
     Y = Y.T
 
-    x = np.linalg.lstsq(Y[:, 1:-1], y, rcond=None)[0]
-    
-    x_MA = np.concatenate(([1], x, [1]))
+    x_MA = np.linalg.lstsq(Y, y, rcond=None)[0]
 
     return x_AR, x_MA
 
 def predict_arma_model(ts, p, q, m, x_AR, x_MA, miu):
     n = len(ts)
-    eps = np.random.normal(size=n)
     predictions = np.zeros(n)
     
     for i in range(max(p, q), n):
         x_pred_AR = np.array(ts[i - p : i][::-1])
-        x_pred_MA = np.array(eps[i - q : i + 1][::-1].tolist() + [miu])
+        x_pred_MA = np.array(eps[i - q : i][::-1])
         
-        predictions[i] = np.dot(x_AR, x_pred_AR) + np.dot(x_MA, x_pred_MA)
+        predictions[i] = np.dot(x_AR, x_pred_AR) + np.dot(x_MA, x_pred_MA) + eps[i]
     
     return predictions
 
@@ -269,9 +263,9 @@ plt.show()
 fig.savefig('PS_09_4_1.png', format='png')
 fig.savefig('PS_09_4_1.pdf', format='pdf')
 
-# Best ARMA (p=4, q=15)
-# Best Time Horizon (m): 71
-# Best MSE: 2250581.5399686876
+# Best ARMA (p=13, q=1)
+# Best Time Horizon (m): 41
+# Best MSE: 6744.772197111114
 
 #%%
 
@@ -326,22 +320,42 @@ ax.set_xlabel('Timp')
 ax.set_ylabel('Valoare')
 ax.legend()
 
-fig.suptitle('Best ARMA(p={best_p},q={best_q}) si predictii')
+fig.suptitle(f'Best ARMA(p={best_p},q={best_q}) si predictii')
 plt.show()
 
 fig.savefig('PS_09_4_2.png', format='png')
 fig.savefig('PS_09_4_2.pdf', format='pdf')
 
-import statsmodels.api as sm
+#%%
+from statsmodels.tsa.arima.model import ARIMA
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+p = 12
+q = 5
+
+N = 1000
+
+x = np.arange(1, N + 1)
+
+trend = 0.005 * (x ** 2) + 0.001 * x + 7
+
+season = 160 * np.sin(2 * np.pi * x / 12) + 40 * np.cos(2 * np.pi * x / 36)
+
+noise = (N / 16) * np.random.normal(0, 1, N)
+
+time_series = trend + season + noise
 
 order = (p, 2, q)
-model = sm.tsa.ARIMA(time_series, order=order)
+model = ARIMA(time_series, order=order)
 results = model.fit()
-
 
 print(results.summary())
 
+label = f'Seria de timp ajustata cu ARIMA(p={p}, d={2}, q={q})'
+
 plt.plot(time_series, label='Seria de timp originala')
-plt.plot(results.fittedvalues, color='red', label='Seria de timp ajustata cu ARIMA(p={p}, d={2}, q={q})')
+plt.plot(results.fittedvalues, color='red', label=label)
 plt.legend(loc='upper left')
 plt.show()
